@@ -7,7 +7,7 @@ using MQTTnet.Protocol;
 
 namespace MQTTnet.Client.Extensions.Test.Topics
 {
-    [MqttTopic("yrh/car")]
+    [MqttTopic("geely/car")]
     public class CarHandler:TopicHandler
     {
         [MqttTopic("speed")]

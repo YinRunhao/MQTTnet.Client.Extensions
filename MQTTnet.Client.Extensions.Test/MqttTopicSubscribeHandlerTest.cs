@@ -28,7 +28,7 @@ namespace MQTTnet.Client.Extensions.Test
             if (handler is MqttTopicSubscribeHandler)
             {
                 MqttApplicationMessage msg = new MqttApplicationMessage();
-                msg.Topic = "home/tempreture";
+                msg.Topic = "home/temperature";
                 msg.Payload = UTF8Encoding.UTF8.GetBytes("HelloWorld");
 
                 MqttApplicationMessageReceivedEventArgs args = new MqttApplicationMessageReceivedEventArgs("TestClientId", msg);
@@ -58,7 +58,7 @@ namespace MQTTnet.Client.Extensions.Test
             if (handler is MqttTopicSubscribeHandler)
             {
                 MqttApplicationMessage msg = new MqttApplicationMessage();
-                msg.Topic = "yrh/car/fuel";
+                msg.Topic = "geely/car/fuel";
                 msg.Payload = UTF8Encoding.UTF8.GetBytes("HelloWorld");
 
                 MqttApplicationMessageReceivedEventArgs args = new MqttApplicationMessageReceivedEventArgs("TestClientId", msg);

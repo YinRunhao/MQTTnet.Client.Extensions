@@ -24,7 +24,7 @@ namespace MQTTnet.Client.Extensions.Test
 
             Assert.That(lst.Count, Is.EqualTo(Consts.TotalTopics));
             Assert.True(lst.FindIndex(s => s.Topic == "vms/display") >= 0);
-            Assert.True(lst.FindIndex(s => s.Topic == "yrh/car/seatbelts") >= 0);
+            Assert.True(lst.FindIndex(s => s.Topic == "geely/car/seatbelts") >= 0);
             topicCollection.Clear();
         }
 

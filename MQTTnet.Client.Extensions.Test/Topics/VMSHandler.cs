@@ -8,7 +8,7 @@ namespace MQTTnet.Client.Extensions.Test.Topics
 {
     public class VMSHandler : TopicHandler
     {
-        public async Task Tempreture()
+        public async Task Temperature()
         {
         }
 

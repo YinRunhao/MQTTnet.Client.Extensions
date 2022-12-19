@@ -17,7 +17,7 @@ namespace MQTTnet.Client.Extensions.Test.Topics
         /// </summary>
         /// <returns></returns>
         [MqttSubscribeIgnore]
-        public async Task Tempreture()
+        public async Task Temperature()
         {
             // meet some exception here
             throw new NotImplementedException("Test exception");
