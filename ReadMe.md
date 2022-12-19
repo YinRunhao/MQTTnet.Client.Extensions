@@ -173,7 +173,7 @@
 ```c#
 public class VMSHandler : TopicHandler
 {
-    public async Task Tempreature()
+    public async Task Temperature()
     {
     }
 
@@ -185,7 +185,7 @@ public class VMSHandler : TopicHandler
 
 在该类中的两个方法将被识别为以下两个订阅的回调
 
-> vms/tempreature
+> vms/temperature
 >
 > vms/brightness
 
@@ -263,7 +263,7 @@ A: 不可以，因为MQTT协议中规定发布的消息必须包含明确的主�
 
 Q: 通过通配符订阅接收到了未设置 *MqttTopic* 特性的主题会怎样？要如何处理？
 
-A: 会产生无法处理的错误日志。这里有一个设计思想就是**我只做我能做的事情**，若只定义了 *home/tempreature* 的处理方法，但使用了 *home/#* 进行订阅，导致收到了 *home/bright* 的消息，这里将认为是尚未定义这类消息的处理方案，即**我不能做这个处理**。虽然不能映射到对应的处理方法，但过滤器对这种消息仍然有效。
+A: 会产生无法处理的错误日志。这里有一个设计思想就是**我只做我能做的事情**，若只定义了 *home/tempreature* 的处理方法，但使用了 *home/#* 进行订阅，导致收到了 *home/bright* 的消息，这里将认为是尚未定义这类消息的处理方案，即**我不能处理这个消息**。虽然不能映射到对应的处理方法，但过滤器对这种消息仍然有效。
 
 Q: 我的订阅主题中包含了某些识别符，要如何通过*MqttTopic* 特性指定？例如:*home/{roomName}/light*。
 
