@@ -15,6 +15,18 @@ namespace MQTTnet.Client.Extensions
     public static class MQTTnetClientExtensions
     {
         /// <summary>
+        /// 设置主题占位符变量字典类型
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="setting"></param>
+        /// <returns></returns>
+        public static IServiceCollection UseTopicPlaceholder<T>(this IServiceCollection services) where T : class, ITopicPlaceholderDictionary
+        {
+            services.AddSingleton<ITopicPlaceholderDictionary, T>();
+            return services;
+        }
+
+        /// <summary>
         /// 使用指定的MQTT客户端订阅处理器
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -24,6 +36,10 @@ namespace MQTTnet.Client.Extensions
         public static IServiceCollection UseMqttTopicHandler<T>(this IServiceCollection services, Action<MqttTopicHandlerOptions> act) where T : MqttTopicSubscribeHandler
         {
             services.AddSingleton<IMqttApplicationMessageReceivedHandler, T>();
+            services.TryAddSingleton<ITopicPlaceholderDictionary>(sp =>
+            {
+                return MqttTopicPlaceholderDictionary.GetInstance();
+            });
             services.AddSingleton<MqttTopicCollection>(sp =>
             {
                 return MqttTopicCollection.GetInstance();
@@ -31,6 +47,10 @@ namespace MQTTnet.Client.Extensions
             services.AddSingleton<TopicHandlerFilterCollection>(sp =>
             {
                 return TopicHandlerFilterCollection.GetInstance();
+            });
+            services.TryAddSingleton<MqttTopicPlaceholderDictionary>(sp =>
+            {
+                return MqttTopicPlaceholderDictionary.GetInstance();
             });
 
             MqttTopicHandlerOptions options = new MqttTopicHandlerOptions();
@@ -74,8 +94,36 @@ namespace MQTTnet.Client.Extensions
         /// 订阅TopicHandler对应的主题
         /// </summary>
         /// <param name="client"></param>
+        /// <remarks>使用默认占位符变量字典解析占位符</remarks>
+        /// <exception cref="InvalidOperationException"></exception>
         /// <returns></returns>
         public static async Task<MqttClientSubscribeResult> SubscribeTopicsAsync(this IMqttClient client)
+        {
+            MqttTopicPlaceholderDictionary dic = MqttTopicPlaceholderDictionary.GetInstance();
+            return await SubscribeTopicsAsync(client, dic);
+        }
+
+        /// <summary>
+        /// 取消通过TopicHandler订阅的主题
+        /// </summary>
+        /// <param name="client"></param>
+        /// <remarks>使用默认占位符变量字典解析占位符</remarks>
+        /// <exception cref="InvalidOperationException"></exception>
+        /// <returns></returns>
+        public static async Task<MqttClientUnsubscribeResult> UnSubscribeTopicsAsync(this IMqttClient client)
+        {
+            MqttTopicPlaceholderDictionary dic = MqttTopicPlaceholderDictionary.GetInstance();
+            return await UnSubscribeTopicsAsync(client, dic);
+        }
+
+        /// <summary>
+        /// 订阅TopicHandler对应的主题
+        /// </summary>
+        /// <param name="client"></param>
+        /// <remarks>使用指定占位符变量字典解析占位符</remarks>
+        /// <exception cref="InvalidOperationException"></exception>
+        /// <returns></returns>
+        public static async Task<MqttClientSubscribeResult> SubscribeTopicsAsync(this IMqttClient client, ITopicPlaceholderDictionary dic)
         {
             // 分批次 TBD
             MqttTopicCollection collection = MqttTopicCollection.GetInstance();
@@ -86,9 +134,11 @@ namespace MQTTnet.Client.Extensions
             {
                 if (topic.HandlerInfo.HandleMethod.GetCustomAttribute<MqttSubscribeIgnoreAttribute>() == null)
                 {
+                    // 解析占位符
+                    string topicVal = Utility.GetTopic(client.Options.ClientId, topic.Topic, dic);
                     TopicFilter filter = new TopicFilter()
                     {
-                        Topic = topic.Topic,
+                        Topic = topicVal,
                         QualityOfServiceLevel = topic.QoS
                     };
                     filters.Add(filter);
@@ -105,8 +155,10 @@ namespace MQTTnet.Client.Extensions
         /// 取消通过TopicHandler订阅的主题
         /// </summary>
         /// <param name="client"></param>
+        /// <remarks>使用指定占位符变量字典解析占位符</remarks>
+        /// <exception cref="InvalidOperationException"></exception>
         /// <returns></returns>
-        public static async Task<MqttClientUnsubscribeResult> UnSubscribeTopicsAsync(this IMqttClient client)
+        public static async Task<MqttClientUnsubscribeResult> UnSubscribeTopicsAsync(this IMqttClient client, ITopicPlaceholderDictionary dic)
         {
             // 分批次 TBD
             MqttTopicCollection collection = MqttTopicCollection.GetInstance();
@@ -117,7 +169,9 @@ namespace MQTTnet.Client.Extensions
             {
                 if (topic.HandlerInfo.HandleMethod.GetCustomAttribute<MqttSubscribeIgnoreAttribute>() == null)
                 {
-                    topics.Add(topic.Topic);
+                    // 解析占位符
+                    string topicVal = Utility.GetTopic(client.Options.ClientId, topic.Topic, dic);
+                    topics.Add(topicVal);
                 }
             }
             if (topics.Count > 0)

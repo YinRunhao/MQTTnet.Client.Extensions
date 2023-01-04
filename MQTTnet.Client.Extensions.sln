@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MQTTnet.Client.Extensions.D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MQTTnet.Client.Extensions", "MQTTnet.Client.Extensions\MQTTnet.Client.Extensions.csproj", "{9DCCFB58-3F6D-4FA9-A630-22A108797506}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MQTTnet.Client.Extensions.Test", "MQTTnet.Client.Extensions.Test\MQTTnet.Client.Extensions.Test.csproj", "{2368CCCC-FD9C-4D26-AE4F-1E26EBA71B63}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MQTTnet.Client.Extensions.Test", "MQTTnet.Client.Extensions.Test\MQTTnet.Client.Extensions.Test.csproj", "{2368CCCC-FD9C-4D26-AE4F-1E26EBA71B63}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MQTTnet.Client.Extensions.TestTopics", "MQTTnet.Client.Extensions.TestTopics\MQTTnet.Client.Extensions.TestTopics.csproj", "{BAE66CD7-7FA8-47A7-B661-F955810D359E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{2368CCCC-FD9C-4D26-AE4F-1E26EBA71B63}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2368CCCC-FD9C-4D26-AE4F-1E26EBA71B63}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2368CCCC-FD9C-4D26-AE4F-1E26EBA71B63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BAE66CD7-7FA8-47A7-B661-F955810D359E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAE66CD7-7FA8-47A7-B661-F955810D359E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAE66CD7-7FA8-47A7-B661-F955810D359E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAE66CD7-7FA8-47A7-B661-F955810D359E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

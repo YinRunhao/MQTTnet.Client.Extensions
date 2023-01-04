@@ -111,22 +111,34 @@ namespace MQTTnet.Client.Extensions
             }
             var methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
             MqttTopicItem item = default;
+            string topicExp = string.Empty;
             foreach (var method in methods)
             {
                 item = new MqttTopicItem();
                 var attr = method.GetCustomAttribute<MqttTopicAttribute>();
                 if (attr != null)
                 {
-                    item.SetTopic(prefix + attr.Topic);
+                    //item.SetTopic(prefix + attr.Topic);
+                    topicExp = prefix + attr.Topic;
                     item.SetQos(attr.QoS);
                 }
                 else
                 {
-                    item.SetTopic(prefix + method.Name.ToLower());
+                    //item.SetTopic(prefix + method.Name.ToLower());
+                    topicExp = prefix + method.Name.ToLower();
                     if (tpAttr != null)
                     {
                         item.SetQos(tpAttr.QoS);
                     }
+                }
+                // 校验主题中占位符的格式
+                if (Utility.CheckTopicFormat(topicExp))
+                {
+                    item.SetTopic(topicExp);
+                }
+                else
+                {
+                    throw new TopicHandlerDeclareException(type.Name, method.Name, $"订阅主题[{topicExp}]占位符格式不正确");
                 }
 
                 var info = GetHandlerInfo(type, method);

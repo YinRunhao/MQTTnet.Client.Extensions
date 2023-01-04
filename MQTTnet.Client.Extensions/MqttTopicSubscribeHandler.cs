@@ -33,11 +33,17 @@ namespace MQTTnet.Client.Extensions
         /// </summary>
         protected List<Type> m_FilterTypes;
 
+        /// <summary>
+        /// 主题占位符字典
+        /// </summary>
+        protected ITopicPlaceholderDictionary m_PlaceholderDictionary;
+
         public MqttTopicSubscribeHandler(IServiceProvider sp)
         {
             m_Topics = sp.GetRequiredService<MqttTopicCollection>();
             m_MainProvider = sp;
             m_Logger = m_MainProvider.GetService<ILogger<MqttTopicSubscribeHandler>>();
+            m_PlaceholderDictionary = sp.GetRequiredService<ITopicPlaceholderDictionary>();
             var temp = sp.GetRequiredService<TopicHandlerFilterCollection>();
             m_FilterTypes = temp.ToList();
         }
@@ -140,7 +146,7 @@ namespace MQTTnet.Client.Extensions
         /// <returns></returns>
         protected virtual async Task ActionExecuteAsync(IServiceProvider service, MqttApplicationMessageReceivedEventArgs eventArgs, TopicHandlerContext context)
         {
-            var topic = GetMqttTopicItem(eventArgs.ApplicationMessage.Topic, eventArgs.ApplicationMessage.TopicAlias);
+            var topic = GetMqttTopicItem(eventArgs.ClientId, eventArgs.ApplicationMessage.Topic, eventArgs.ApplicationMessage.TopicAlias);
             if (topic != null)
             {
                 try
@@ -174,14 +180,16 @@ namespace MQTTnet.Client.Extensions
         /// <param name="topic"></param>
         /// <param name="topicAlias"></param>
         /// <returns></returns>
-        protected virtual MqttTopicItem GetMqttTopicItem(string topic, ushort? topicAlias)
+        protected virtual MqttTopicItem GetMqttTopicItem(string clientId, string topic, ushort? topicAlias)
         {
             MqttTopicItem ret = default;
             if (!string.IsNullOrEmpty(topic))
             {
                 foreach (var item in m_Topics)
                 {
-                    if (item.Topic == topic)
+                    // 解析占位符
+                    string topicVal = Utility.GetTopic(clientId, item.Topic, m_PlaceholderDictionary);
+                    if (topicVal == topic)
                     {
                         // 更新主题别名
                         if (topicAlias.HasValue && topicAlias > 0)

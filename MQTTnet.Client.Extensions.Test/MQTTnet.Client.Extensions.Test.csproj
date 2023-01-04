@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MQTTnet.Client.Extensions.TestTopics\MQTTnet.Client.Extensions.TestTopics.csproj" />
     <ProjectReference Include="..\MQTTnet.Client.Extensions\MQTTnet.Client.Extensions.csproj" />
   </ItemGroup>
 

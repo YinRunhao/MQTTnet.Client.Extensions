@@ -6,6 +6,7 @@ using MQTTnet.Client.Publishing;
 using MQTTnet.Client.Receiving;
 using MQTTnet.Client.Subscribing;
 using MQTTnet.Client.Unsubscribing;
+using MQTTnet.Formatter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,11 +15,52 @@ using System.Threading.Tasks;
 
 namespace MQTTnet.Client.Extensions.Test
 {
+    public class TestMqttClientOptions : IMqttClientOptions
+    {
+        public string ClientId { get; set; }
+
+        public bool CleanSession => throw new NotImplementedException();
+
+        public IMqttClientCredentials Credentials => throw new NotImplementedException();
+
+        public IMqttExtendedAuthenticationExchangeHandler ExtendedAuthenticationExchangeHandler => throw new NotImplementedException();
+
+        public MqttProtocolVersion ProtocolVersion => throw new NotImplementedException();
+
+        public IMqttClientChannelOptions ChannelOptions => throw new NotImplementedException();
+
+        public TimeSpan CommunicationTimeout => throw new NotImplementedException();
+
+        public TimeSpan KeepAlivePeriod => throw new NotImplementedException();
+
+        public TimeSpan? KeepAliveSendInterval => throw new NotImplementedException();
+
+        public MqttApplicationMessage WillMessage => throw new NotImplementedException();
+
+        public uint? WillDelayInterval => throw new NotImplementedException();
+
+        public string AuthenticationMethod => throw new NotImplementedException();
+
+        public byte[] AuthenticationData => throw new NotImplementedException();
+
+        public uint? MaximumPacketSize => throw new NotImplementedException();
+
+        public ushort? ReceiveMaximum => throw new NotImplementedException();
+
+        public bool? RequestProblemInformation => throw new NotImplementedException();
+
+        public bool? RequestResponseInformation => throw new NotImplementedException();
+
+        public uint? SessionExpiryInterval => throw new NotImplementedException();
+
+        public ushort? TopicAliasMaximum => throw new NotImplementedException();
+    }
+
     public class TestMqttClient : IMqttClient
     {
         public bool IsConnected => throw new NotImplementedException();
 
-        public IMqttClientOptions Options => throw new NotImplementedException();
+        public IMqttClientOptions Options => new TestMqttClientOptions();
 
         public IMqttClientConnectedHandler ConnectedHandler { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public IMqttClientDisconnectedHandler DisconnectedHandler { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
