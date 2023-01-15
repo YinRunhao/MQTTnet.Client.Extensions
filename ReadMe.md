@@ -259,12 +259,66 @@ A(OnHandlerExecuting) -> B(OnHandlerExecuting) -> [对应Handler的方法] -> B(
 
 Q: 订阅处理的方法中使用 *MqttTopic* 特性能否包含通配符
 
-A: 不可以，因为MQTT协议中规定发布的消息必须包含明确的主题，所以订阅者接收发布消息时，发布消息的主题不会包含通配符。
+A: 目前不支持，因为MQTT协议中规定发布的消息必须包含明确的主题，所以订阅者接收发布消息时，发布消息的主题不会包含通配符。后续版本可能会支持。
 
 Q: 通过通配符订阅接收到了未设置 *MqttTopic* 特性的主题会怎样？要如何处理？
 
 A: 会产生无法处理的错误日志。这里有一个设计思想就是**我只做我能做的事情**，若只定义了 *home/tempreature* 的处理方法，但使用了 *home/#* 进行订阅，导致收到了 *home/bright* 的消息，这里将认为是尚未定义这类消息的处理方案，即**我不能处理这个消息**。虽然不能映射到对应的处理方法，但过滤器对这种消息仍然有效。
 
-Q: 我的订阅主题中包含了某些识别符，要如何通过*MqttTopic* 特性指定？例如:*home/{roomName}/light*。
+## 主题占位符变量
 
-A: 当前版本暂不支持这种动态拼接的主题名，可以尝试将这些包含业务信息的数据放在ApplicationMessage里，而不是主题名中。可能在下一个版本会支持动态拼接的主题名
+主题占位符变量是用于在订阅主题中包含某些特定标识符的解决方案。例如现有一个车机应用，车机的唯一识别码是"testcar001"，它需要订阅主题**vehicle/testcar001/unlock**实现远程解锁功能，那么此时"testcar001"就是主题占位符变量。此时我们将"testcar001"理解为一个变量，变量名为**carId**，变量值是"testcar001"，当然，变量值应该是可以是任何值，可以从配置文件、数据库等地方读取。
+
+### 使用主题占位符变量
+
+在上述例子中，我们可以理解为需要订阅主题**vehicle/{carId}/unlock**以实现远程解锁功能，其中{carId}是一个占位符。
+
+1. 在**MqttTopic**特性中声明主题占位符
+
+   在**MqttTopic**特性中将需要抽象为变量的地方使用“{}”包裹起来，"{}"中的就是占位符变量
+
+   ```c#
+   [MqttTopic("vehicle")]
+   public class VehicleHandler : TopicHandler
+   {
+       [MqttTopic("{carId}/unlock")]
+       public async Task Unlock()
+       {
+           // 远程解锁指定车架号的车子
+       }
+   }
+   ```
+
+2. 设置主题占位符变量的值
+
+   在依赖注入容器构建完成后获取**ITopicPlaceholderDictionary**，调用**SetPlaceholder**方法设置占位符变量的值。
+
+   若有使用自动订阅TopicHandler对应的主题，请在调用**SubscribeTopicsAsync**之前就把占位符变量设置好。
+
+   ```c#
+   ...
+   // 使用依赖注入
+   ServiceCollection collection = new ServiceCollection();
+   collection.AddSingleton<IConfiguration>(config);
+   // 1. 配置扩展处理器
+   collection.UseMqttTopicHandler(option => {
+       // 2. 添加指定程序集的所有TopicHandler
+       option.AddMqttTopicHandlers(typeof(VehicleHandler).Assembly);
+   });
+   // 构建依赖注入容器
+   var service = collection.BuildServiceProvider();
+   
+   // 读配置拿标识符
+   var cfg = service.GetRequiredService<IConfiguration>();
+   string carId = cfg.GetSection("MyCarId").Value;
+   // 从容器中获取占位符字典
+   var dic = service.GetRequiredService<ITopicPlaceholderDictionary>();
+   // 3. 设置占位符的值
+   dic.SetPlaceholder("carId", carId);
+   ...
+   ```
+
+   *注意：这里的占位符是大小写敏感的。*
+
+   *完整示例可参考Demo中的UseTopicPlaceholder.cs*
+

@@ -8,7 +8,7 @@ using MQTTnet.Protocol;
 namespace MQTTnet.Client.Extensions.Test.Topics
 {
     [MqttTopic("geely/car")]
-    public class CarHandler:TopicHandler
+    public class CarHandler : TopicHandler
     {
         [MqttTopic("speed")]
         public void SpeedSubscribe()
@@ -24,7 +24,7 @@ namespace MQTTnet.Client.Extensions.Test.Topics
 
         }
 
-        [MqttTopic("seatbelts",MqttQualityOfServiceLevel.AtLeastOnce)]
+        [MqttTopic("seatbelts", MqttQualityOfServiceLevel.AtLeastOnce)]
         public void SeatbeltsSubscribe()
         {
         }

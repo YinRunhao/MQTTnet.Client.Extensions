@@ -12,8 +12,9 @@ namespace MQTTnet.Client.Extensions
     public class MqttTopicItem
     {
         /// <summary>
-        /// 主题名
+        /// 主题名/主题名表达式
         /// </summary>
+        /// <remarks>当使用占位符时应解析后再使用</remarks>
         public string Topic { get; private set; }
 
         /// <summary>
